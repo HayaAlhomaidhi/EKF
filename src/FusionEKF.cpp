@@ -69,7 +69,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 	  ekf_.x_ << x, y, vx , vy;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
-      ekf_.x_  << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
+      ekf_.x_  << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 1, 1;
       //ekf_.Init(x_in, MatrixXd &P_in, MatrixXd &F_in,MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in);	
 
     }
@@ -96,8 +96,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
 
-	float dt = (measurement_pack.timestamp_ - previous_timestamp_);
-  dt /= 1000000.0; // convert micros to s
+  float dt = (measurement_pack.timestamp_ - previous_timestamp_)/1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
 
   ekf_.F_ = MatrixXd(4, 4);
@@ -106,7 +105,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 			0, 0, 1, 0,
 			0, 0, 0, 1;
  
-   float noise_ax = 9.0;
+  float noise_ax = 9.0;
   float noise_ay = 9.0;
   
   float dt_2 = dt * dt; 
@@ -147,8 +146,4 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 	ekf_.Update(measurement_pack.raw_measurements_);
 
   }
-
-  // print the output
-  cout << "x_ = " << ekf_.x_ << endl;
-  cout << "P_ = " << ekf_.P_ << endl;
 }

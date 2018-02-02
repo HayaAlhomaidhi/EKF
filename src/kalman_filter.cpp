@@ -30,7 +30,6 @@ void KalmanFilter::Predict() {
 void KalmanFilter::Update(const VectorXd &z) {
 	
   	VectorXd z_pred = H_ * x_;
-	cout << z_pred<<std::endl;
 	VectorXd y = z - z_pred;
 	MatrixXd Ht = H_.transpose();
 	MatrixXd S = H_ * P_ * Ht + R_;
@@ -45,7 +44,7 @@ void KalmanFilter::Update(const VectorXd &z) {
 	P_ = (I - K * H_) * P_;
 }
 
-
+ 	
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
@@ -57,7 +56,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
 	float rho = sqrt(px*px+py*py);
 	float phi = atan2(py , px);
-	float rhod = ((px*vx) + (py*vy))/rho;
+	float rhod ;
+	if (fabs(rho) < 0.0001) {
+    		rhod = 0;
+  	} else {
+		rhod = ((px*vx) + (py*vy))/rho;
+	}
 	VectorXd h = VectorXd(3); 
 	h << rho , phi , rhod;
         //Eigen::MatrixXd Hj = tools.CalculateJacobian(x_);
